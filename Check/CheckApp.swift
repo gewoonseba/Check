@@ -13,5 +13,6 @@ struct CheckApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: [Habit.self, HabitCompletion.self])
     }
 }

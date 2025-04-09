@@ -39,6 +39,21 @@ struct HabitDetailView: View {
     }
 }
 
+struct TimeframeSelector: View {
+    @Binding var selectedTimeframe: Timeframe
+    
+    var body: some View {
+        Picker("Timeframe", selection: $selectedTimeframe) {
+            ForEach(Timeframe.allCases) { timeframe in
+                Text(timeframe.rawValue).tag(timeframe)
+            }
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal)
+    }
+}
+
+
 struct EditHabitView: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var habit: Habit
