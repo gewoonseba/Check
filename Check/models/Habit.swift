@@ -27,6 +27,17 @@ class Habit {
             }
         }
     }
+    
+    func toggleCompletion(on date: Date) {
+        if let completionToRemove = completions.first(where: { $0.date == date }) {
+            // Remove completion for today
+            completions.removeAll(where: { $0 === completionToRemove })
+        } else {
+            // Add completion for today
+            let completion = HabitCompletion(date: date, habit: self)
+            completions.append(completion)
+        }
+    }
 }
 
 enum FrequencyType: String, Codable, CaseIterable {

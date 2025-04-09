@@ -70,17 +70,7 @@ struct HabitRow: View {
     }
     
     private func toggleCompletion() {
-        if isCompleted {
-            // Remove completion for today
-            if let completionToRemove = habit.completions.first(where: { Calendar.current.isDateInToday($0.date) }) {
-                modelContext.delete(completionToRemove)
-            }
-        } else {
-            // Add completion for today
-            let completion = HabitCompletion(date: Date(), habit: habit)
-            habit.completions.append(completion)
-        }
-        
+        habit.toggleCompletion(on: Date())
         isCompleted.toggle()
     }
 }

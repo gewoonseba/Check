@@ -81,6 +81,7 @@ alwaysApply: false
   - Performance testing
   - Error scenarios
   - Accessibility testing
+  _ Test files are located in a separate directory
 
 
   # Essential Features
