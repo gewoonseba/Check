@@ -27,11 +27,19 @@ class Habit {
             }
         }
     }
+
+    func isCompleted(onWeek week: Int, ofYear year: Int) -> Bool {
+        return false
+    }
+
+    func isCompleted(onMonth month: Int, ofYear year: Int) -> Bool {
+        return false
+    }
     
     func toggleCompletion(on date: Date) {
-        if let completionToRemove = completions.first(where: { $0.date == date }) {
-            // Remove completion for today
-            completions.removeAll(where: { $0 === completionToRemove })
+        if completions.contains(where: { $0.date == date }) {
+            // Remove all completions for this exact date
+            completions.removeAll(where: { $0.date == date })
         } else {
             // Add completion for today
             let completion = HabitCompletion(date: date, habit: self)

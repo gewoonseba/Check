@@ -107,4 +107,21 @@ final class HabitTests: XCTestCase {
         XCTAssertTrue(habit.isCompleted(on: tomorrow), "Tomorrow's habit should still be completed")
         XCTAssertEqual(habit.completions.count, 1, "Should have one completion")
     }
+
+    func testToggleCompletionForMultipleCompletionsOnSameDay() {
+        // Given
+        let habit = Habit(name: "Test Habit", frequency: .daily)
+        let today = Date()
+        habit.completions.append(HabitCompletion(date: today, habit: habit)) // Add completion
+        habit.completions.append(HabitCompletion(date: today, habit: habit)) // Add completion
+
+        // When
+        habit.toggleCompletion(on: today)
+
+        // Then
+        XCTAssertFalse(habit.isCompleted(on: today), "Habit should not be completed after toggling")
+        XCTAssertEqual(habit.completions.count, 0, "Should have no completions")
+
+        
+    }
 } 
