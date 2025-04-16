@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TimeGridView: View {
     let habit: Habit
+    let selectedDate: Date
     let year: Int = Calendar.current.component(.year, from: Date())
     let squareSize: CGFloat = 15.0
     let spacing: CGFloat = 2.0
@@ -49,7 +50,7 @@ struct TimeGridView: View {
         LazyVGrid(columns: columns, spacing: spacing) {
             // Using 0..<totalCount to be more idiomatic with zero-based indexing
             ForEach(0..<totalCount, id: \.self) { itemIndex in
-                let (isCompleted, isFuture) = checkStatus(for: itemIndex) // Updated to return future status
+                let (isCompleted, isFuture, isSelected) = checkStatus(for: itemIndex) // Updated to return future status
                 
                 // Calculate color based on status
                 let color: Color = {
@@ -63,7 +64,7 @@ struct TimeGridView: View {
                 Rectangle()
                     .fill(color) // Use conditional color
                     .frame(width: squareSize, height: squareSize)
-                    .border(Color.gray.opacity(0.5), width: 0.5) // Optional border
+                    .border(isSelected ? Color.blue : Color.clear, width: 2)
                     .help(getHelpText(for: itemIndex)) // Updated help text logic
             }
         }
@@ -71,39 +72,42 @@ struct TimeGridView: View {
     }
 
     /// Checks if the habit is completed for the given item index and if it's in the future.
-    private func checkStatus(for itemIndex: Int) -> (isCompleted: Bool, isFuture: Bool) {
+    private func checkStatus(for itemIndex: Int) -> (isCompleted: Bool, isFuture: Bool, isSelected: Bool) {
         let calendar = Calendar.current
         let now = Date()
 
         switch habit.frequency {
         case .daily:
             guard let date = calendar.date(byAdding: .day, value: itemIndex, to: startOfYear) else {
-                return (false, false) // Default if date calculation fails
+                return (false, false, false) // Default if date calculation fails
             }
             let isFuture = calendar.compare(date, to: now, toGranularity: .day) == .orderedDescending
-            let completed = habit.isCompleted(on: date)
-            return (completed, isFuture)
+            let isCompleted = habit.isCompleted(on: date)
+            let isSelected = calendar.compare(date, to: selectedDate, toGranularity: .day) == .orderedSame
+            return (isCompleted, isFuture, isSelected)
 
         case .weekly:
             // weekOfYear component is 1-based
             let week = itemIndex + 1
             // Approximate the start date of the week for comparison
             guard let approxWeekStartDate = calendar.date(byAdding: .weekOfYear, value: itemIndex, to: startOfYear) else {
-                 return (false, false)
+                 return (false, false, false)
             }
             let isFuture = calendar.compare(approxWeekStartDate, to: now, toGranularity: .weekOfYear) == .orderedDescending
-            let completed = habit.isCompleted(onWeek: week, ofYear: year)
-            return (completed, isFuture)
+            let isCompleted = habit.isCompleted(onWeek: week, ofYear: year)
+            let isSelected = calendar.compare(approxWeekStartDate, to: selectedDate, toGranularity: .weekOfYear) == .orderedSame
+            return (isCompleted, isFuture, isSelected)
 
         case .monthly:
             // month component is 1-based
             let month = itemIndex + 1
             guard let monthStartDate = calendar.date(from: DateComponents(year: year, month: month, day: 1)) else {
-                 return (false, false)
+                 return (false, false, false)
             }
             let isFuture = calendar.compare(monthStartDate, to: now, toGranularity: .month) == .orderedDescending
-            let completed = habit.isCompleted(onMonth: month, ofYear: year)
-            return (completed, isFuture)
+            let isCompleted = habit.isCompleted(onMonth: month, ofYear: year)
+            let isSelected = calendar.compare(monthStartDate, to: selectedDate, toGranularity: .month) == .orderedSame
+            return (isCompleted, isFuture, isSelected)
         }
     }
 

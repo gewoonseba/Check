@@ -12,7 +12,7 @@ struct HabitDetailView: View {
         NavigationStack {
             VStack {
                 ScrollView {
-                    TimeGridView(habit: habit)
+                    TimeGridView(habit: habit, selectedDate: Date())
                 }
             }
             .navigationTitle(habit.name)
