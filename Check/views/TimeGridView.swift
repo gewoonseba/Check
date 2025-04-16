@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct TimeGridView: View {
-    let frequency: FrequencyType // Use the enum from your Habit model
+    let frequency: FrequencyType 
+    let year: Int = Calendar.current.component(.year, from: Date())
     let squareSize: CGFloat = 15.0
     let spacing: CGFloat = 2.0
 
