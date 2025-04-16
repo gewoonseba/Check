@@ -7,28 +7,28 @@ struct HabitListView: View {
     @State private var selectedHabit: Habit?
     
     var body: some View {
-        List {
-            ForEach(habits) { habit in
-                HabitRow(habit: habit)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        selectedHabit = habit
+        NavigationStack {
+            List {
+                ForEach(habits) { habit in
+                    NavigationLink {
+                        HabitDetailView(habit: habit)
+                    } label: {
+                        HabitRow(habit: habit)
                     }
+                }
+                .onDelete(perform: deleteHabits)
             }
-            .onDelete(perform: deleteHabits)
-        }
-        .listStyle(.plain)
-        .overlay {
-            if habits.isEmpty {
-                ContentUnavailableView {
-                    Label("No Habits", systemImage: "list.bullet.clipboard")
-                } description: {
-                    Text("Add a habit to get started")
+            .listStyle(.plain)
+            .navigationTitle("Habits")
+            .overlay {
+                if habits.isEmpty {
+                    ContentUnavailableView {
+                        Label("No Habits", systemImage: "list.bullet.clipboard")
+                    } description: {
+                        Text("Add a habit to get started")
+                    }
                 }
             }
-        }
-        .sheet(item: $selectedHabit) { habit in
-            HabitDetailView(habit: habit)
         }
     }
     

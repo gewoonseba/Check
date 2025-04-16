@@ -48,12 +48,6 @@ struct HabitDetailView: View {
                         showingEditSheet = true
                     }
                 }
-                
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Close") {
-                        dismiss()
-                    }
-                }
             }
             .sheet(isPresented: $showingEditSheet) {
                 EditHabitView(habit: habit)
