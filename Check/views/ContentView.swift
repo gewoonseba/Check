@@ -3,7 +3,6 @@ import SwiftData
 
 struct ContentView: View {
     @State private var showingAddHabit = false
-    @State private var selectedTimeframe: Timeframe = .weekly
     
     var body: some View {
         NavigationStack {
@@ -27,15 +26,6 @@ struct ContentView: View {
             }
         }
     }
-}
-
-enum Timeframe: String, CaseIterable, Identifiable {
-    case weekly = "Weekly"
-    case monthly = "Monthly"
-    case quarterly = "Quarterly"
-    case yearly = "Yearly"
-    
-    var id: String { self.rawValue }
 }
 
 #Preview {
