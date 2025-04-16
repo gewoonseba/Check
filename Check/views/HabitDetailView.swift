@@ -12,7 +12,12 @@ struct HabitDetailView: View {
         NavigationStack {
             VStack {
                 ScrollView {
-                    TimeGridView(habit: habit, selectedDate: Date())
+                    let year = Calendar.current.component(.year, from: Date())
+                    Text(String(year))
+                        .font(.title)
+                        .padding()
+
+                    TimeGridView(habit: habit, selectedDate: Date(), year: year)
                 }
             }
             .navigationTitle(habit.name)

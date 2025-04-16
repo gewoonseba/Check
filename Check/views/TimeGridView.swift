@@ -3,13 +3,15 @@ import SwiftUI
 struct TimeGridView: View {
     let habit: Habit
     let selectedDate: Date
-    let year: Int = Calendar.current.component(.year, from: Date())
-    let squareSize: CGFloat = 15.0
-    let spacing: CGFloat = 2.0
+    let year: Int
+    
+    private let calendar = Calendar.current
+    private let squareSize: CGFloat = 15.0
+    private let spacing: CGFloat = 2.0
 
     /// Start of the year for date calculations.
     private var startOfYear: Date {
-        Calendar.current.date(from: DateComponents(year: year, month: 1, day: 1))!
+        calendar.date(from: DateComponents(year: year, month: 1, day: 1))!
     }
 
     /// The total number of items (squares) for this frequency in a year.
@@ -17,10 +19,10 @@ struct TimeGridView: View {
         switch habit.frequency {
         case .daily:
             // Note: Still ignoring leap years for simplicity
-            return 365
+            return calendar.numberOfDays(in: year)
         case .weekly:
             // Standard number of weeks in a year
-            return 52
+            return calendar.numberOfWeeks(in: year)
         case .monthly:
             return 12
         }
@@ -73,7 +75,6 @@ struct TimeGridView: View {
 
     /// Checks if the habit is completed for the given item index and if it's in the future.
     private func checkStatus(for itemIndex: Int) -> (isCompleted: Bool, isFuture: Bool, isSelected: Bool) {
-        let calendar = Calendar.current
         let now = Date()
 
         switch habit.frequency {
@@ -113,7 +114,6 @@ struct TimeGridView: View {
 
     /// Provides appropriate help text based on the frequency and item index.
     private func getHelpText(for itemIndex: Int) -> String {
-        let calendar = Calendar.current
         switch habit.frequency {
         case .daily:
             guard let date = calendar.date(byAdding: .day, value: itemIndex, to: startOfYear) else {
