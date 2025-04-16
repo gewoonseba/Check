@@ -15,25 +15,26 @@ class Habit {
     }
     
     func isCompleted(on date: Date) -> Bool {
-        let calendar = Calendar.current
         return completions.contains { completion in
-            switch frequency {
-            case .daily:
-                return calendar.isDate(completion.date, inSameDayAs: date)
-            case .weekly:
-                return calendar.isDate(completion.date, equalTo: date, toGranularity: .weekOfYear)
-            case .monthly:
-                return calendar.isDate(completion.date, equalTo: date, toGranularity: .month)
-            }
+            let calendar = Calendar.current
+            return calendar.isDate(completion.date, equalTo: date, toGranularity: .day)
         }
     }
 
     func isCompleted(onWeek week: Int, ofYear year: Int) -> Bool {
-        return false
+        return completions.contains { completion in
+            let calendar = Calendar.current
+            return calendar.component(.weekOfYear, from: completion.date) == week &&
+                   calendar.component(.year, from: completion.date) == year
+        }
     }
 
     func isCompleted(onMonth month: Int, ofYear year: Int) -> Bool {
-        return false
+        return completions.contains { completion in
+            let calendar = Calendar.current
+            return calendar.component(.month, from: completion.date) == month &&
+                   calendar.component(.year, from: completion.date) == year
+        }
     }
     
     func toggleCompletion(on date: Date) {

@@ -3,7 +3,7 @@ import XCTest
 import SwiftData
 
 final class HabitTests: XCTestCase {
-    func testDailyHabitCompletion() {
+    func testCompletionOnDay() {
         // Given
         let habit = Habit(name: "Test Habit", frequency: .daily)
         let today = Date()
@@ -19,40 +19,44 @@ final class HabitTests: XCTestCase {
         XCTAssertFalse(habit.isCompleted(on: tomorrow), "Habit should not be completed for tomorrow")
     }
     
-    func testWeeklyHabitCompletion() {
+    func testCompletionOnWeek() {
         // Given
         let habit = Habit(name: "Test Habit", frequency: .weekly)
-        let today = Date()
-        let lastWeek = Calendar.current.date(byAdding: .weekOfYear, value: -1, to: today)!
-        let nextWeek = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: today)!
-        let laterThisWeek = Calendar.current.date(byAdding: .day, value: 2, to: today)!
+
+        let calendar = Calendar.current
+
+        // April 16, 2025 is in week 16 of 2025
+        let dateComponents = DateComponents(year: 2025, month: 4, day: 16)
+        let habitDate = calendar.date(from: dateComponents)!
+
         
         // When
-        habit.completions.append(HabitCompletion(date: today, habit: habit))
+        habit.completions.append(HabitCompletion(date: habitDate, habit: habit))
         
         // Then
-        XCTAssertTrue(habit.isCompleted(on: today), "Habit should be completed for the current week")
-        XCTAssertTrue(habit.isCompleted(on: laterThisWeek), "Habit should be completed for later this week")
-        XCTAssertFalse(habit.isCompleted(on: lastWeek), "Habit should not be completed for last week")
-        XCTAssertFalse(habit.isCompleted(on: nextWeek), "Habit should not be completed for next week")
+        XCTAssertTrue(habit.isCompleted(onWeek: 16, ofYear: 2025), "Habit should be completed for week 16 of 2025")
+        XCTAssertFalse(habit.isCompleted(onWeek: 17, ofYear: 2025), "Habit should not be completed for week 17 of 2025")
+        XCTAssertFalse(habit.isCompleted(onWeek: 16, ofYear: 2024), "Habit should not be completed for week 17 of 2025")
     }
     
     func testMonthlyHabitCompletion() {
-        // Given
-        let habit = Habit(name: "Test Habit", frequency: .monthly)
-        let today = Date()
-        let lastMonth = Calendar.current.date(byAdding: .month, value: -1, to: today)!
-        let nextMonth = Calendar.current.date(byAdding: .month, value: 1, to: today)!
-        let laterThisMonth = Calendar.current.date(byAdding: .day, value: 15, to: today)!
+        /// Given
+        let habit = Habit(name: "Test Habit", frequency: .weekly)
+
+        let calendar = Calendar.current
+
+        // April 16, 2025 is in month 4 of 2025
+        let dateComponents = DateComponents(year: 2025, month: 4, day: 16)
+        let habitDate = calendar.date(from: dateComponents)!
+
         
         // When
-        habit.completions.append(HabitCompletion(date: today, habit: habit))
+        habit.completions.append(HabitCompletion(date: habitDate, habit: habit))
         
         // Then
-        XCTAssertTrue(habit.isCompleted(on: today), "Habit should be completed for the current month")
-        XCTAssertTrue(habit.isCompleted(on: laterThisMonth), "Habit should be completed for later this month")
-        XCTAssertFalse(habit.isCompleted(on: lastMonth), "Habit should not be completed for last month")
-        XCTAssertFalse(habit.isCompleted(on: nextMonth), "Habit should not be completed for next month")
+        XCTAssertTrue(habit.isCompleted(onMonth: 4, ofYear: 2025), "Habit should be completed for month 4 of 2025")
+        XCTAssertFalse(habit.isCompleted(onMonth: 3, ofYear: 2025), "Habit should not be completed for month 3 of 2025")
+        XCTAssertFalse(habit.isCompleted(onMonth: 4, ofYear: 2024), "Habit should not be completed for month 4 of 2024")
     }
     
     func testToggleCompletionAddingCompletion() {
