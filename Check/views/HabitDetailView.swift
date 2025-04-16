@@ -27,9 +27,13 @@ struct HabitDetailView: View {
                         .labelsHidden() // Hide the label for a cleaner look
                         .padding(.horizontal)
                         
-                    Button("Placeholder Button") {
-                        // Action to be added later
+                    Button {
+                        habit.toggleCompletion(on: selectedDate)
+                    } label: {
+                        Text(habit.isCompleted(on: selectedDate) ? "Mark as Not Done" : "Mark as Done")
+                            .frame(maxWidth: .infinity) // Make label take full width for consistent button size
                     }
+                    .buttonStyle(.borderedProminent)
                     .padding()
                 }
                 .padding()
