@@ -49,9 +49,17 @@ struct TimeGridView: View {
         LazyVGrid(columns: columns, spacing: spacing) {
             // Using 0..<totalCount to be more idiomatic with zero-based indexing
             ForEach(0..<totalCount, id: \.self) { itemIndex in
-                let isCompleted = checkCompletion(for: itemIndex)
-                let color = isCompleted ? Color.green : Color.gray.opacity(0.3)
+                let (isCompleted, isFuture) = checkStatus(for: itemIndex) // Updated to return future status
                 
+                // Calculate color based on status
+                let color: Color = {
+                    if isFuture {
+                        return Color.gray.opacity(0.1) // Very light gray for future items
+                    } else {
+                        return isCompleted ? Color.green : Color.gray.opacity(0.3) // Existing logic for past/present
+                    }
+                }() // Immediately invoke the closure to assign the color
+
                 Rectangle()
                     .fill(color) // Use conditional color
                     .frame(width: squareSize, height: squareSize)
@@ -62,25 +70,43 @@ struct TimeGridView: View {
         .padding()
     }
 
-    /// Checks if the habit is completed for the given item index based on the frequency.
-    private func checkCompletion(for itemIndex: Int) -> Bool {
+    /// Checks if the habit is completed for the given item index and if it's in the future.
+    private func checkStatus(for itemIndex: Int) -> (isCompleted: Bool, isFuture: Bool) {
+        let calendar = Calendar.current
+        let now = Date()
+
         switch habit.frequency {
         case .daily:
-            guard let date = Calendar.current.date(byAdding: .day, value: itemIndex, to: startOfYear) else {
-                return false
+            guard let date = calendar.date(byAdding: .day, value: itemIndex, to: startOfYear) else {
+                return (false, false) // Default if date calculation fails
             }
-            return habit.isCompleted(on: date)
+            let isFuture = calendar.compare(date, to: now, toGranularity: .day) == .orderedDescending
+            let completed = habit.isCompleted(on: date)
+            return (completed, isFuture)
+
         case .weekly:
             // weekOfYear component is 1-based
             let week = itemIndex + 1
-            return habit.isCompleted(onWeek: week, ofYear: year)
+            // Approximate the start date of the week for comparison
+            guard let approxWeekStartDate = calendar.date(byAdding: .weekOfYear, value: itemIndex, to: startOfYear) else {
+                 return (false, false)
+            }
+            let isFuture = calendar.compare(approxWeekStartDate, to: now, toGranularity: .weekOfYear) == .orderedDescending
+            let completed = habit.isCompleted(onWeek: week, ofYear: year)
+            return (completed, isFuture)
+
         case .monthly:
             // month component is 1-based
             let month = itemIndex + 1
-            return habit.isCompleted(onMonth: month, ofYear: year)
+            guard let monthStartDate = calendar.date(from: DateComponents(year: year, month: month, day: 1)) else {
+                 return (false, false)
+            }
+            let isFuture = calendar.compare(monthStartDate, to: now, toGranularity: .month) == .orderedDescending
+            let completed = habit.isCompleted(onMonth: month, ofYear: year)
+            return (completed, isFuture)
         }
     }
-    
+
     /// Provides appropriate help text based on the frequency and item index.
     private func getHelpText(for itemIndex: Int) -> String {
         let calendar = Calendar.current
