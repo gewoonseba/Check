@@ -7,6 +7,7 @@ struct HabitDetailView: View {
     
     @Bindable var habit: Habit
     @State private var showingEditSheet = false
+    @State private var selectedDate = Date()
     
     var body: some View {
         NavigationStack {
@@ -17,8 +18,23 @@ struct HabitDetailView: View {
                         .font(.title)
                         .padding()
 
-                    TimeGridView(habit: habit, selectedDate: Date(), year: year)
+                    TimeGridView(habit: habit, selectedDate: selectedDate, year: year)
                 }
+                
+                // Sticky section at the bottom
+                VStack {
+                    DatePicker("Select Date", selection: $selectedDate, displayedComponents: .date)
+                        .labelsHidden() // Hide the label for a cleaner look
+                        .padding(.horizontal)
+                        
+                    Button("Placeholder Button") {
+                        // Action to be added later
+                    }
+                    .padding()
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(.bar) // Or any other background to make it visually distinct
             }
             .navigationTitle(habit.name)
             .navigationBarTitleDisplayMode(.inline)
