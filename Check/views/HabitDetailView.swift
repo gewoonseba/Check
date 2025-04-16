@@ -13,9 +13,9 @@ struct HabitDetailView: View {
         NavigationStack {
             VStack {
                 TimeframeSelector(selectedTimeframe: $selectedTimeframe)
-                
-                CompletionCalendarView(habit: habit, timeframe: selectedTimeframe)
-                    .padding()
+                ScrollView {
+                    TimeGridView(frequency: habit.frequency)
+                }
             }
             .navigationTitle(habit.name)
             .navigationBarTitleDisplayMode(.inline)
