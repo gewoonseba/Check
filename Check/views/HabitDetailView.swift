@@ -7,12 +7,10 @@ struct HabitDetailView: View {
     
     @Bindable var habit: Habit
     @State private var showingEditSheet = false
-    @State private var selectedTimeframe: Timeframe = .weekly
     
     var body: some View {
         NavigationStack {
             VStack {
-                TimeframeSelector(selectedTimeframe: $selectedTimeframe)
                 ScrollView {
                     TimeGridView(frequency: habit.frequency)
                 }
@@ -38,21 +36,6 @@ struct HabitDetailView: View {
         }
     }
 }
-
-struct TimeframeSelector: View {
-    @Binding var selectedTimeframe: Timeframe
-    
-    var body: some View {
-        Picker("Timeframe", selection: $selectedTimeframe) {
-            ForEach(Timeframe.allCases) { timeframe in
-                Text(timeframe.rawValue).tag(timeframe)
-            }
-        }
-        .pickerStyle(.segmented)
-        .padding(.horizontal)
-    }
-}
-
 
 struct EditHabitView: View {
     @Environment(\.dismiss) private var dismiss
