@@ -37,7 +37,7 @@ struct VerticalDateScrubber: View {
             .fill(Color(.systemGray5))
             .frame(width: 12, height: trackHeight)
 
-          // Knob
+          // Knob + label
           Circle()
             .fill(Color.white)
             .shadow(radius: 4)
@@ -57,30 +57,33 @@ struct VerticalDateScrubber: View {
                 }
             )
             .alignmentGuide(.top) { d in d.height / 2 }
-
-          // Floating label
-          //   HStack {
-          //     RoundedRectangle(cornerRadius: 6)
-          //       .fill(Color.white)
-          //       .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 2)
-          //       .overlay(
-          //         Text(formattedDate(selectedDate))
-          //           .font(.system(size: 16, weight: .semibold))
-          //           .foregroundColor(.black)
-          //           .padding(.horizontal, 12)
-          //       )
-          //     Spacer()
-          //   }
-          //   .offset(x: -44, y: knobY(for: selectedDate, trackHeight: trackHeight) - trackHeight / 2)
-          //   .animation(.easeInOut, value: selectedDate)
+            .overlay {
+              Text(formattedDate(selectedDate))
+                .font(.caption)
+                .foregroundColor(.gray)
+                .padding(.horizontal)
+            }
         }
-      }
-      .overlay(
+
+        // Floating label, absolutely positioned next to knob
         Text(formattedDate(selectedDate))
           .font(.caption)
-          .foregroundColor(.gray)
-          .padding(.horizontal)
-      )
+          .foregroundColor(.black)
+          .frame(height: knobDiameter)
+          .padding(.horizontal, 8)
+          .padding(.vertical, 4)
+          .background(
+            RoundedRectangle(cornerRadius: 8)
+              .fill(Color.white)
+              .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
+          )
+          .position(
+            x: -knobDiameter - 68,  // Adjust for horizontal offset (right of knob)
+            y: knobYOffest(for: selectedDate, trackHeight: trackHeight) + 8
+          )
+          .allowsHitTesting(false)
+        // So it doesn't block knob gestures
+      }
     }
   }
 
@@ -106,5 +109,8 @@ struct VerticalDateScrubber: View {
     for: Date(timeIntervalSince1970: 1_747_206_000))  // 2025-05-14
   let endDate = Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 1_747_206_000))  // 2025-05-14
   let startDate = Calendar.current.date(byAdding: .day, value: -60, to: endDate)!
-  return VerticalDateScrubber(startDate: startDate, endDate: endDate, selectedDate: $date)
-}
+    return VStack(alignment: .center){
+        VerticalDateScrubber(startDate: startDate, endDate: endDate, selectedDate: $date)
+    }
+    .frame(maxWidth: .infinity)
+    }
