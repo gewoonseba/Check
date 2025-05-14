@@ -84,4 +84,33 @@ class CalendarExtensionTests: XCTestCase {
             XCTAssertEqual(weeks, 53, "Year \(year) should have 53 weeks.")
         }
     }
+
+    // MARK: - numberOfDaysBetween
+
+    func testNumberOfDaysBetween_SingleDayDifference() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let from = formatter.date(from: "2025-05-13")!
+        let to = formatter.date(from: "2025-05-14")!
+        let days = calendar.numberOfDaysBetween(from, to)
+        XCTAssertEqual(days, 1, "Expected 1 day between 13th and 14th of May 2025")
+    }
+
+    func testNumberOfDaysBetween_MultiDayDifference() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let from = formatter.date(from: "2025-04-03")!
+        let to = formatter.date(from: "2025-05-14")!
+        let days = calendar.numberOfDaysBetween(from, to)
+        XCTAssertEqual(days, 41, "Expected 41 days between 3rd April and 14th May 2025")
+    }
+
+    func testNumberOfDaysBetween_LargeDifference() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let from = formatter.date(from: "2024-12-12")!
+        let to = formatter.date(from: "2025-05-14")!
+        let days = calendar.numberOfDaysBetween(from, to)
+        XCTAssertEqual(days, 153, "Expected 153 days between 12th Dec 2024 and 14th May 2025")
+    }
 }

@@ -24,4 +24,16 @@ extension Calendar {
         let weekNumber = component(.weekOfYear, from: date)
         return weekNumber
     }
+
+    /// Calculates the number of days between two dates (ignoring time components).
+    /// - Parameters:
+    ///   - from: The start date.
+    ///   - to: The end date.
+    /// - Returns: The number of days between the two dates.
+    func numberOfDaysBetween(_ from: Date, _ to: Date) -> Int? {
+        let startOfFrom = self.startOfDay(for: from)
+        let startOfTo = self.startOfDay(for: to)
+        let components = self.dateComponents([.day], from: startOfFrom, to: startOfTo)
+        return components.day.map { abs($0) }
+    }
 }
