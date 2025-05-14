@@ -14,20 +14,24 @@ struct HabitDetailView: View {
       VStack {
         ScrollView {
           let year = Calendar.current.component(.year, from: Date())
+          let calendar = Calendar.current
+          let firstDayOfYear =
+            calendar.date(from: DateComponents(year: year, month: 1, day: 1)) ?? Date()
+          let lastDayOfYear =
+            calendar.date(from: DateComponents(year: year, month: 12, day: 31)) ?? Date()
           Text(String(year))
             .font(.title)
             .padding()
 
-          TimeGridView(habit: habit, selectedDate: selectedDate, year: year)
+          HStack {
+            TimeGridView(habit: habit, selectedDate: selectedDate, year: year)
+            VerticalDateScrubber(
+              startDate: firstDayOfYear, endDate: lastDayOfYear, selectedDate: $selectedDate)
+          }
         }
 
         // Sticky section at the bottom
         VStack {
-          DatePicker(
-            "Select Date", selection: $selectedDate, in: ...Date(), displayedComponents: .date
-          )
-          .labelsHidden()  // Hide the label for a cleaner look
-          .padding(.horizontal)
 
           Button {
             habit.toggleCompletion(on: selectedDate)
@@ -40,7 +44,6 @@ struct HabitDetailView: View {
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(.bar)  // Or any other background to make it visually distinct
       }
       .navigationTitle(habit.name)
       .navigationBarTitleDisplayMode(.inline)
